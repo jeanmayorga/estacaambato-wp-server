@@ -1,1 +1,4 @@
 node_modules
+.env
+droplet.env
+.wwebjs_auth
