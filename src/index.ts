@@ -1,13 +1,13 @@
 import express, { Request, Response } from "express";
-import { Client, LocalAuth } from "whatsapp-web.js";
-import QRCode from "qrcode-terminal";
+// import { Client, LocalAuth } from "whatsapp-web.js";
+// import QRCode from "qrcode-terminal";
 import dotenv from "dotenv";
 
 import { logger } from "./utils";
 
 dotenv.config();
 
-async function server(whatsapp: Client) {
+async function server() {
   logger.info("server: initializing");
   const server = express();
   server.use(express.json());
@@ -39,7 +39,8 @@ async function server(whatsapp: Client) {
       const message = body.message;
 
       logger.info({ to, message }, "whatsapp: start sending message");
-      const newMessage = await whatsapp.sendMessage(to, message);
+      // const newMessage = await whatsapp.sendMessage(to, message);
+      const newMessage = { id: { id: "sdf" } };
       logger.info(`whatsapp: message sent ${newMessage.id.id}`);
 
       return res.status(200).json({ data: newMessage });
@@ -53,27 +54,27 @@ async function server(whatsapp: Client) {
 }
 
 async function main() {
-  logger.info("whatsapp: initializing");
-  const whatsapp = new Client({
-    authStrategy: new LocalAuth(),
-  });
+  // logger.info("whatsapp: initializing");
+  // const whatsapp = new Client({
+  //   authStrategy: new LocalAuth(),
+  // });
 
-  whatsapp.initialize();
+  // whatsapp.initialize();
 
-  whatsapp.on("qr", (qr) => {
-    logger.info("whatsapp: qr code is ready!!");
-    QRCode.generate(qr, { small: true });
-  });
-  whatsapp.on("authenticated", () => {
-    logger.info("whatsapp: authenticated");
-  });
-  whatsapp.on("ready", () => {
-    logger.info("whatsapp: ready");
-    server(whatsapp);
-  });
-  whatsapp.on("auth_failure", (e) => {
-    logger.error({ message: e }, "Error: Authentication failed");
-  });
+  // whatsapp.on("qr", (qr) => {
+  //   logger.info("whatsapp: qr code is ready!!");
+  //   QRCode.generate(qr, { small: true });
+  // });
+  // whatsapp.on("authenticated", () => {
+  //   logger.info("whatsapp: authenticated");
+  // });
+  // whatsapp.on("ready", () => {
+  //   logger.info("whatsapp: ready");
+  server();
+  // });
+  // whatsapp.on("auth_failure", (e) => {
+  //   logger.error({ message: e }, "Error: Authentication failed");
+  // });
 }
 
 main();
