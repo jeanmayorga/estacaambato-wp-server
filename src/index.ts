@@ -47,8 +47,8 @@ async function server(whatsapp: Client) {
       return res.status(500).json({ error });
     }
   });
-  server.listen(3000, () => {
-    logger.info("server: running on http://localhost:3000/");
+  server.listen(8080, () => {
+    logger.info("server: running on http://localhost:8080/");
   });
 }
 
