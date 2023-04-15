@@ -43,9 +43,9 @@ export async function server(whatsapp: Client) {
       const to = `${body.to}@c.us`;
       const message = body.message;
 
-      logger.info({ to, message }, "whatsapp: start sending message");
+      logger.info("whatsapp: start sending message");
       const newMessage = await whatsapp.sendMessage(to, message);
-      logger.info({ id: newMessage.id.id }, `whatsapp: message sent`);
+      logger.info("whatsapp: message sent");
 
       const data = newMessage as Message;
 
