@@ -1672,10 +1672,9 @@ webidl-conversions@^3.0.0:
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-3.0.1.tgz#24534275e2a7bc6be7bc86611cc16ae0a5654871"
   integrity sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==
 
-whatsapp-web.js@^1.19.5:
-  version "1.19.5"
-  resolved "https://registry.yarnpkg.com/whatsapp-web.js/-/whatsapp-web.js-1.19.5.tgz#a8fd66b00accea924d2861f6095ef89b2870732c"
-  integrity sha512-tavnhcQEbmlTzzLDVqqxIjWllsOwM0/5hhASame3bKEUT7Wk+q0z8g3cYMk43Eqdip1bK1rqUvwzzD3lDNfwCA==
+"whatsapp-web.js@https://github.com/BielPlugner/whatszap-web.js-Fix_Button_list_SendImage":
+  version "1.19.4"
+  resolved "https://github.com/BielPlugner/whatszap-web.js-Fix_Button_list_SendImage#1e976a6d17238ff1ac23965cf2d52dfa91b50af9"
   dependencies:
     "@pedroslopez/moduleraid" "^5.0.2"
     fluent-ffmpeg "^2.1.2"

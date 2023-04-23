@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import WAWebJS, { Client } from "whatsapp-web.js";
+import WAWebJS, { Buttons, Client, MessageContent } from "whatsapp-web.js";
 import dotenv from "dotenv";
 
 import { logger } from "./utils";
@@ -18,9 +18,16 @@ export async function server(whatsapp: Client) {
   server.post("/message", async (req: Request, res: Response) => {
     try {
       interface Body {
+        title?: string;
         message?: string;
+        footer?: string;
+        buttons?: {
+          body: string;
+          id: string;
+        }[];
         to?: string;
       }
+
       const body = req.body as Body;
       const token = req.headers.authorization?.split(" ")[1];
 
@@ -29,22 +36,30 @@ export async function server(whatsapp: Client) {
       if (!token || token !== process.env.TOKEN_SECRET) {
         return res.status(401).json({ erorr: "Not authorized." });
       }
+
       if (!body.message || !body.to) {
         return res
           .status(400)
           .json({ erorr: "Missing fields (message or to)" });
       }
-      if (!body.to.startsWith("593")) {
-        return res
-          .status(400)
-          .json({ erorr: "Bad phone number, must start with 593" });
-      }
 
       const to = `${body.to}@c.us`;
-      const message = body.message;
+      let content: MessageContent;
+
+      if (body.buttons && (body.buttons?.length || 0) > 0) {
+        content = new Buttons(
+          body.message,
+          body.buttons,
+          body.title,
+          body.footer
+        );
+      } else {
+        content = body.message;
+      }
 
       logger.info("whatsapp: start sending message");
-      const newMessage = await whatsapp.sendMessage(to, message);
+
+      const newMessage = await whatsapp.sendMessage(to, content);
       logger.info("whatsapp: message sent");
 
       const data = newMessage as Message;
