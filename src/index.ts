@@ -1,10 +1,11 @@
-import axios from "axios";
 import QRCode from "qrcode-terminal";
 import { Client, LocalAuth } from "whatsapp-web.js";
 
 import { deletedMessages } from "./store";
 import { getSimpleMessage, logger } from "./utils";
 import { server } from "./server";
+import { treatVoiceNote } from "./treatments/voice-note";
+import { treatChatMessageRevoke } from "./treatments/chat-message-revoke";
 
 async function main() {
   logger.info("whatsapp: initializing");
@@ -27,36 +28,43 @@ async function main() {
   whatsapp.on("ready", () => logger.info("whatsapp: ready"));
 
   whatsapp.on("message_revoke_everyone", (_message, revoked_msg) => {
-    if (revoked_msg) {
-      if (revoked_msg.type === "chat") {
-        deletedMessages.chats.push(getSimpleMessage(revoked_msg));
-      }
-    }
+    treatChatMessageRevoke(revoked_msg);
   });
 
-  whatsapp.on("message_revoke_me", (message) => {
-    if (message && message.type === "chat") {
-      deletedMessages.chats.push(getSimpleMessage(message));
+  whatsapp.on("message_revoke_me", async (message) => {
+    treatChatMessageRevoke(message);
+  });
+
+  whatsapp.on("message_create", async (message) => {
+    if (
+      message.from === "593962975512@c.us" &&
+      message.to === "593962975512@c.us"
+    ) {
+      treatVoiceNote(message);
+      console.log(message);
     }
   });
 
   whatsapp.on("message", async (message) => {
-    if (message.type === "buttons_response") {
-      try {
-        const request = await axios.put(
-          "https://estacaambato.vercel.app/api/whatsapp",
-          {
-            method: "PUT",
-            body: { selectedButtonId: message.selectedButtonId },
-          }
-        );
-        logger.info(
-          `severAPI: PUT sended ${message.selectedButtonId} ${request.data.data}`
-        );
-      } catch {
-        logger.error("serverAPI: cannot save");
-      }
-    }
+    treatVoiceNote(message);
+    // treatViewOnceImage(message);
+
+    // if (message.type === "buttons_response") {
+    //   try {
+    //     const request = await axios.put(
+    //       "https://estacaambato.vercel.app/api/whatsapp",
+    //       {
+    //         method: "PUT",
+    //         body: { selectedButtonId: message.selectedButtonId },
+    //       }
+    //     );
+    //     logger.info(
+    //       `severAPI: PUT sended ${message.selectedButtonId} ${request.data.data}`
+    //     );
+    //   } catch {
+    //     logger.error("serverAPI: cannot save");
+    //   }
+    // }
   });
 
   server(whatsapp);

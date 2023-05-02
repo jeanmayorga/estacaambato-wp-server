@@ -8,7 +8,11 @@ import WAWebJS, {
 import dotenv from "dotenv";
 
 import { logger } from "./utils";
-import { deletedMessages } from "./store";
+import {
+  deletedMessages,
+  chatMessagesRevoked,
+  voiceNotesTranscribed,
+} from "./store";
 
 dotenv.config();
 
@@ -62,6 +66,13 @@ export async function server(whatsapp: Client) {
   logger.info("server: initializing");
   const server = express();
   server.use(express.json());
+
+  server.get("/voice-notes", async (_req: Request, res: Response) => {
+    return res.status(200).json({ data: voiceNotesTranscribed });
+  });
+  server.get("/chat-messages-revoked", async (_req: Request, res: Response) => {
+    return res.status(200).json({ data: chatMessagesRevoked });
+  });
 
   server.get("/deleted-messages", async (_req: Request, res: Response) => {
     logger.info("server: start get deleted list messages");
