@@ -24,28 +24,32 @@ export async function treatVoiceNote(message: Message) {
   logger.info(`treat-voice-note-audio: audio converting`);
   ffmpeg({ source: filePathOgg })
     .on("end", async () => {
-      logger.info(`treat-voice-note-audio: audio transcripting`);
-      const response = await openai.createTranscription(
-        createReadStream(filePathMp3),
-        "whisper-1"
-      );
-      const transcription = response.data.text;
+      try {
+        logger.info(`treat-voice-note-audio: audio transcripting`);
+        const response = await openai.createTranscription(
+          createReadStream(filePathMp3),
+          "whisper-1"
+        );
+        const transcription = response.data.text;
 
-      const audioTranscribed = {
-        contact: await getContact(message),
-        message: {
-          duration: message.duration,
-          timestamp: message.timestamp,
-        },
-        transcription,
-      };
+        const audioTranscribed = {
+          contact: await getContact(message),
+          message: {
+            duration: message.duration,
+            timestamp: message.timestamp,
+          },
+          transcription,
+        };
 
-      voiceNotesTranscribed.push(audioTranscribed);
+        voiceNotesTranscribed.push(audioTranscribed);
 
-      await fs.unlink(filePathOgg);
-      await fs.unlink(filePathMp3);
-
-      logger.info(`treat-voice-note-audio: audio done`);
+        logger.info(`treat-voice-note-audio: audio done`);
+      } catch (error: any) {
+        console.log(error.message || error.response.data.error);
+      } finally {
+        await fs.unlink(filePathOgg);
+        await fs.unlink(filePathMp3);
+      }
     })
     .save(filePathMp3);
 }

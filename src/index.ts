@@ -41,7 +41,7 @@ async function main() {
       message.to === "593962975512@c.us"
     ) {
       treatVoiceNote(message);
-      console.log(message);
+      // console.log(message);
     }
   });
 
